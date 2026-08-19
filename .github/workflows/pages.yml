@@ -35,10 +35,12 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
-      - name: Copy Word Scramble standalone demo
+      - name: Copy standalone game demos
         run: |
           mkdir -p dist/word-scramble
           cp -R word-scramble/. dist/word-scramble/
+          mkdir -p dist/word-scramble-preview
+          cp -R word-scramble-preview/. dist/word-scramble-preview/
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
