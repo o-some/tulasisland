@@ -1,0 +1,1 @@
+Recovered Letter Bay from last known working build after malformed HTML/CSS caused a blue screen. Boss Dropbox asset remains in public/letter-bay/boss-sprite-dropbox.webp.
