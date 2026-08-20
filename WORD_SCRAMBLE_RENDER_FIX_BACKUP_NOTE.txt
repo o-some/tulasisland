@@ -1,0 +1,3 @@
+Pre-fix source commit: 892f676fbcef77ab49373aef7865d60afba0ebb7
+Target file: word-scramble-preview/index.html
+Fix scope: selected slot renders s.sel[i].l instead of the entire object.
