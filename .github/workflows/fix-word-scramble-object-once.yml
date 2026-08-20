@@ -1,0 +1,54 @@
+name: Fix Word Scramble selected-letter rendering once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-word-scramble-object-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch only Word Scramble slot rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('word-scramble-preview/index.html')
+          text = p.read_text(encoding='utf-8')
+          old = "${s.sel[i]||''}"
+          new = "${s.sel[i]?.l||''}"
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly 1 target occurrence, found {count}')
+          text = text.replace(old, new, 1)
+          if "${s.sel[i]||''}" in text:
+              raise SystemExit('Old object-rendering expression still present')
+          if "${s.sel[i]?.l||''}" not in text:
+              raise SystemExit('New letter-rendering expression missing')
+          p.write_text(text, encoding='utf-8')
+          print('Patched exactly one rendering expression.')
+          PY
+          git diff --check
+
+      - name: Commit patch and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          rm .github/workflows/fix-word-scramble-object-once.yml
+          git add word-scramble-preview/index.html .github/workflows/fix-word-scramble-object-once.yml
+          git commit -m 'Fix Word Scramble selected letter rendering'
+          git push origin HEAD:main
